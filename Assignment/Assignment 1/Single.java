@@ -1,4 +1,4 @@
-package inheritance;
+package single;
 class Ones{
 	int  x=27;
 	 void show() {
