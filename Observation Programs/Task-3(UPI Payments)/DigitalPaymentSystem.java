@@ -1,5 +1,7 @@
 package observation;
 
+import java.util.Scanner;
+
 interface PaymentService {
 
     void pay(String id, double value)
@@ -102,7 +104,9 @@ class UPIPayment implements PaymentService {
             data[0].isEmpty() ||
             data[1].isEmpty()) {
 
-            throw new InvalidUPIException("Invalid UPI ID format.");
+            throw new InvalidUPIException(
+                    "Invalid UPI ID format."
+            );
         }
 
         // Validate payment amount
@@ -140,39 +144,89 @@ public class DigitalPaymentSystem {
 
     public static void main(String[] args) {
 
-        Wallet user = new Wallet(
-                "Amith",
-                "9876543210",
-                "amith@upi"
-        );
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter User Name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter Mobile Number: ");
+        String mobile = sc.nextLine();
+
+        System.out.print("Enter Your UPI ID: ");
+        String upi = sc.nextLine();
+
+        Wallet user = new Wallet(name, mobile, upi);
 
         UPIPayment transaction = new UPIPayment(user);
 
+
+        // Add money
         try {
-            user.addMoney(10000);
 
-            transaction.checkBalance();
+            System.out.print("Enter amount to add: ");
+            double value = sc.nextDouble();
 
-            transaction.pay("rahul@upi", 2500);
-
-        } catch (InvalidUPIException e) {
-            System.out.println(
-                    "Transaction Failed: " + e.getMessage()
-            );
+            user.addMoney(value);
 
         } catch (InvalidAmountException e) {
-            System.out.println(
-                    "Transaction Failed: " + e.getMessage()
-            );
 
-        } catch (InsufficientBalanceException e) {
             System.out.println(
                     "Transaction Failed: " + e.getMessage()
             );
 
         } finally {
-            System.out.println("\nTransaction process completed.");
-            user.displayWalletDetails();
+
+            System.out.println("Add money operation completed.");
         }
+
+
+        // Check balance
+        transaction.checkBalance();
+
+        sc.nextLine();
+
+
+        // Make payment
+        try {
+
+            System.out.print("Enter receiver UPI ID: ");
+            String id = sc.nextLine();
+
+            System.out.print("Enter payment amount: ");
+            double value = sc.nextDouble();
+
+            transaction.pay(id, value);
+
+        } catch (InvalidUPIException e) {
+
+            System.out.println(
+                    "Transaction Failed: " + e.getMessage()
+            );
+
+        } catch (InvalidAmountException e) {
+
+            System.out.println(
+                    "Transaction Failed: " + e.getMessage()
+            );
+
+        } catch (InsufficientBalanceException e) {
+
+            System.out.println(
+                    "Transaction Failed: " + e.getMessage()
+            );
+
+        } finally {
+
+            System.out.println(
+                    "Payment operation completed."
+            );
+        }
+
+
+        // Display final details
+        System.out.println("\nFINAL WALLET DETAILS");
+        user.displayWalletDetails();
+
+        sc.close();
     }
 }
